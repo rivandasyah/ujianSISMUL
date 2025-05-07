@@ -31,7 +31,6 @@ class Welcome extends CI_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
 
-        // Validasi form
         $this->form_validation->set_rules('judul', 'Title', 'required|max_length[30]');
         $this->form_validation->set_rules('rating', 'Rating', 'required|max_length[4]');
         $this->form_validation->set_rules('tahun', 'Year', 'required');
@@ -70,7 +69,7 @@ class Welcome extends CI_Controller
         $this->load->helper('form');
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('judul', 'Title', 'required|max_length[30]');
+        $this->form_validation->set_rules('judul', 'Title', 'required|max_length[100]');
         $this->form_validation->set_rules('rating', 'Rating', 'required|max_length[4]');
         $this->form_validation->set_rules('tahun', 'Year', 'required');
         $this->form_validation->set_rules('deskripsi', 'Description', 'required');
@@ -78,15 +77,14 @@ class Welcome extends CI_Controller
         $this->form_validation->set_rules('trailer_url', 'Trailer URL', 'required');
 
         if ($this->form_validation->run() == FALSE) {
-            $data['post'] = $this->model->read($id);  // Menampilkan data film untuk diupdate
+            $data['post'] = $this->model->read($id);  
             $this->load->view('header');
             $this->load->view('update', $data);
             $this->load->view('footer');
         } else {
-            $this->model->update($id);  // Memperbarui data film
+            $this->model->update($id); 
 
             if ($this->input->post('cover')) {
-                // Proses untuk mengupdate cover jika ada file baru
                 $post = $this->model->read($id);
                 $config['upload_path'] = './upload/post';
                 $config['allowed_types'] = 'jpg|jpeg|png';
@@ -98,39 +96,39 @@ class Welcome extends CI_Controller
 
                 if (!$this->upload->do_upload('cover')) {
                     $this->session->set_flashdata('error', $this->upload->display_errors());
-                    redirect('welcome/update/' . $id);
+                    redirect('index.php/welcome/update/' . $id);
                 } else {
-                    $this->model->update($id);  // Update data setelah upload cover
-                    redirect('welcome');
+                    $this->model->update($id);  
+                    redirect('index.php/welcome');
                 }
             }
-            redirect('welcome');
+            redirect('index.php/welcome');
         }
     }
 
     public function delete($id)
     {
         $post = $this->model->read($id);
-        $this->model->delete($id);  // Hapus data film
+        $this->model->delete($id);  
 
-        unlink('upload/post/' . $post->cover);  // Hapus gambar cover dari folder
-        redirect('welcome');
+        unlink('upload/post/' . $post->cover);  
+        redirect('index.php/welcome');
     }
 
     public function deleteAll()
     {
-        $this->model->deleteAll();  // Hapus semua data film
+        $this->model->deleteAll();  
         $directory = 'upload/post/';
 
         $files = glob($directory . '*');
 
         foreach ($files as $file) {
             if (is_file($file)) {
-                unlink($file);  // Hapus semua file gambar cover
+                unlink($file);  
             }
         }
 
-        redirect('welcome');
+        redirect('index.php/welcome');
     }
 }
 ?>
